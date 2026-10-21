@@ -15,7 +15,7 @@ import { challenges } from '../data/datacache'
 import * as utils from '../lib/utils'
 const security = require('../lib/insecurity')
 const users = require('../data/datacache').users
-const secret = "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";
+
 // vuln-code-snippet start loginAdminChallenge loginBenderChallenge loginJimChallenge
 module.exports = function login () {
   function afterLogin (user: { data: User, bid: number }, res: Response, next: NextFunction) {
@@ -33,17 +33,7 @@ module.exports = function login () {
 
   return (req: Request, res: Response, next: NextFunction) => {
     verifyPreLoginChallenges(req) // vuln-code-snippet hide-line
-    models.sequelize.query(
-      'SELECT * FROM Users WHERE email = :email AND password = :password AND deletedAt IS NULL',
-      {
-        replacements: {
-          email: req.body.email || '',
-          password: security.hash(req.body.password || '')
-        },
-        model: UserModel,
-        plain: true
-      }
-    )
+          .then((authenticatedUser) => { // vuln-code-snippet neutral-line loginAdminChallenge loginBenderChallenge loginJimChallenge
       .then((authenticatedUser) => { // vuln-code-snippet neutral-line loginAdminChallenge loginBenderChallenge loginJimChallenge
         const user = utils.queryResultToJson(authenticatedUser)
         if (user.data?.id && user.data.totpSecret !== '') {
